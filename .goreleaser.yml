@@ -1,0 +1,16 @@
+builds:
+  - id: basechange
+    main: ./cmd/basechange
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+checksum:
+  algorithm: sha256
+
+archives:
+  - id: basechange
+    builds:
+      - basechange
+    format: tar.gz
