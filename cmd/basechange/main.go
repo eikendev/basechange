@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/alecthomas/kong"
-	"github.com/eikendev/basechange/internal/commit"
+	"github.com/eikendev/basechange/internal/git"
 	"github.com/eikendev/basechange/internal/options"
 	"github.com/eikendev/basechange/internal/registry"
 	"github.com/eikendev/basechange/internal/watchables"
@@ -13,7 +14,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var opts options.Options
+var (
+	opts = options.Options{}
+)
 
 func init() {
 	log.SetFormatter(&log.TextFormatter{
@@ -26,7 +29,10 @@ func init() {
 }
 
 func main() {
-	kong.Parse(&opts)
+	kong.Parse(
+		&opts,
+		kong.Description(fmt.Sprintf("%s (%s)", version, date)),
+	)
 
 	ws, err := watchables.Read(opts.Watchables)
 	if err != nil {
@@ -56,7 +62,7 @@ func main() {
 			info.CachedDigest = digest
 			(*ws)[name] = info
 
-			err := commit.Commit(&opts, info.Repository, info.DeployKey, digest)
+			err := git.Commit(&opts, info.Repository, info.DeployKey, digest)
 			if err != nil {
 				log.Errorf("%s", err)
 				success = false
