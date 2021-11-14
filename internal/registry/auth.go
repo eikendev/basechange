@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -31,7 +30,7 @@ func GetToken(image string) (string, error) {
 	header := http.Header{"Accept": []string{"*/*"}}
 	resp, err := RetryReq("GET", challengeURL.String(), maxRetries+1, header, http.StatusUnauthorized)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	defer resp.Body.Close()
 
@@ -54,7 +53,7 @@ func getBearerHeader(challenge string, image string) (string, error) {
 		return "", err
 	}
 
-	resp := Req("GET", authURL.String(), http.Header{})
+	resp, err := Req("GET", authURL.String(), http.Header{})
 	if err != nil {
 		return "", err
 	}

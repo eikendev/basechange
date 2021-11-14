@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/alecthomas/kong"
@@ -11,9 +10,20 @@ import (
 	"github.com/eikendev/basechange/internal/watchables"
 
 	ref "github.com/docker/distribution/reference"
+	log "github.com/sirupsen/logrus"
 )
 
 var opts options.Options
+
+func init() {
+	log.SetFormatter(&log.TextFormatter{
+		DisableTimestamp: true,
+	})
+
+	log.SetOutput(os.Stdout)
+
+	log.SetLevel(log.InfoLevel)
+}
 
 func main() {
 	kong.Parse(&opts)
@@ -35,7 +45,7 @@ func main() {
 
 		digest, err := registry.GetImageDigest(info.Image)
 		if err != nil {
-			log.Printf("%s", err)
+			log.Errorf("%s", err)
 			success = false
 			continue
 		}
@@ -48,7 +58,7 @@ func main() {
 
 			err := commit.Commit(&opts, info.Repository, info.DeployKey, digest)
 			if err != nil {
-				log.Printf("%s", err)
+				log.Errorf("%s", err)
 				success = false
 				continue
 			}

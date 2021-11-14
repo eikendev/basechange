@@ -3,7 +3,6 @@
 package registry
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -39,7 +38,7 @@ func getDigest(url string, token string) (string, error) {
 
 	resp, err := RetryReq("HEAD", url, maxRetries+1, header, http.StatusOK)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	defer resp.Body.Close()
 

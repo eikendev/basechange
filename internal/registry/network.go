@@ -72,17 +72,17 @@ func RetryReq(method, url string, maxAttempts int, header http.Header, expectedC
 }
 
 // Req retrieves the Req HTTP response for a given URL.
-func Req(method, uri string, header http.Header) []byte {
+func Req(method, uri string, header http.Header) ([]byte, error) {
 	resp, err := RetryReq(method, uri, maxRetries+1, header, http.StatusOK)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return body
+	return body, nil
 }
