@@ -3,7 +3,6 @@ package commit
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/eikendev/basechange/internal/options"
@@ -40,8 +39,6 @@ func Commit(opts *options.Options, url, deployKey, digest string) error {
 	if err != nil {
 		return err
 	}
-
-	log.Printf("%v", w)
 
 	commitMsg := fmt.Sprintf("Updated base image: %s", digest)
 	_, err = w.Commit(commitMsg, &git.CommitOptions{
