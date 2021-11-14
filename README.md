@@ -17,5 +17,5 @@ The **preferred way** is to download the binary from the [latest release](https:
 
 Alternatively, you can build it yourself:
 ```bash
-go get -u github.com/eikendev/basechange/cmd/...
+go install github.com/eikendev/basechange/cmd/...@latest
 ```
