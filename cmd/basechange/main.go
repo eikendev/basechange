@@ -59,15 +59,16 @@ func main() {
 		if info.CachedDigest != digest {
 			log.Printf("%s has changed!", imageURL)
 
-			info.CachedDigest = digest
-			(*ws)[name] = info
-
 			err := git.Commit(&opts, info.Repository, info.DeployKey, digest)
 			if err != nil {
 				log.Errorf("%s", err)
 				success = false
 				continue
 			}
+
+			// Set digest after commit, so we can retry if the commit fails.
+			info.CachedDigest = digest
+			(*ws)[name] = info
 		}
 	}
 
