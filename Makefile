@@ -22,10 +22,9 @@ test:
 
 .PHONY: setup
 setup:
-	go get github.com/fzipp/gocyclo/cmd/gocyclo@latest
-	go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install mvdan.cc/gofumpt@latest
+	go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
 
 .PHONY: fmt
 fmt:
