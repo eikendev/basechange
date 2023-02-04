@@ -5,7 +5,7 @@ GO_FILES := $(shell find . -type f \( -iname '*.go' \))
 .PHONY: build
 build:
 	mkdir -p $(OUT_DIR)
-	go build -ldflags="-w -s" -o $(OUT_DIR)/basechange ./cmd/basechange
+	CGO_ENABLED=0 go build -ldflags="-w -s" -o $(OUT_DIR)/basechange ./cmd/basechange
 
 .PHONY: clean
 clean:
