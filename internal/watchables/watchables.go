@@ -2,7 +2,7 @@ package watchables
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,7 +17,7 @@ type Watchable struct {
 type Watchables map[string]Watchable
 
 func Read(path string) (*Watchables, error) {
-	yfile, err := ioutil.ReadFile(path)
+	yfile, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func Write(path string, watchables *Watchables) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(path, out, 0644)
+	err = os.WriteFile(path, out, 0o644)
 	if err != nil {
 		return err
 	}

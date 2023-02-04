@@ -14,9 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	opts = options.Options{}
-)
+var opts = options.Options{}
 
 func init() {
 	log.SetFormatter(&log.TextFormatter{
@@ -33,6 +31,10 @@ func main() {
 		&opts,
 		kong.Description(fmt.Sprintf("%s (%s)", version, date)),
 	)
+
+	if opts.Debug {
+		log.SetLevel(log.DebugLevel)
+	}
 
 	ws, err := watchables.Read(opts.Watchables)
 	if err != nil {

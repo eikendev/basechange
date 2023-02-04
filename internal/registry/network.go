@@ -2,16 +2,17 @@ package registry
 
 import (
 	"errors"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
 	maxRetries = 2
-	UserAgent  = "Watchtower (Docker)"
+	UserAgent  = "basechange"
 )
 
 var client http.Client
@@ -36,6 +37,8 @@ func shouldRetry(maxAttempts, attempts int, response *http.Response) (time.Durat
 
 // https://codereview.stackexchange.com/q/173468
 func RetryReq(method, url string, maxAttempts int, header http.Header, expectedCode int) (*http.Response, error) {
+	log.Debugf("Requesting %s %s\n", method, url)
+
 	header.Set("User-Agent", UserAgent)
 	attempts := 0
 
@@ -59,6 +62,9 @@ func RetryReq(method, url string, maxAttempts int, header http.Header, expectedC
 
 		delay, retry := shouldRetry(maxAttempts, attempts, response)
 		if !retry {
+			if err == nil {
+				err = errors.New("too many attempts")
+			}
 			return nil, err
 		}
 
@@ -79,7 +85,7 @@ func Req(method, uri string, header http.Header) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

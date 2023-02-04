@@ -35,6 +35,7 @@ func getDigest(url string, token string) (string, error) {
 	header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 	header.Add("Accept", "application/vnd.docker.distribution.manifest.list.v2+json")
 	header.Add("Accept", "application/vnd.docker.distribution.manifest.v1+json")
+	header.Add("Accept", "application/vnd.oci.image.index.v1+json")
 
 	resp, err := RetryReq("HEAD", url, maxRetries+1, header, http.StatusOK)
 	if err != nil {
