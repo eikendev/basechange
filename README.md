@@ -7,7 +7,7 @@
 </div>
 
 <p align="center">
-	<a href="https://github.com/eikendev/basechange/actions"><img alt="Build status" src="https://img.shields.io/github/workflow/status/eikendev/basechange/Main"/></a>&nbsp;
+	<a href="https://github.com/eikendev/basechange/actions"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/eikendev/basechange/main.yml?branch=main"/></a>&nbsp;
 	<a href="https://github.com/eikendev/basechange/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/eikendev/basechange"/></a>&nbsp;
 </p>
 
