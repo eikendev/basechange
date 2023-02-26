@@ -13,7 +13,7 @@ clean:
 
 .PHONY: test
 test:
-	stdout=$$(gofumpt -l $(GO_FILES) 2>&1); if [ "$$stdout" ]; then exit 1; fi
+	stdout=$$(gofumpt -l . 2>&1); if [ "$$stdout" ]; then exit 1; fi
 	go vet ./...
 	gocyclo -over 10 $(GO_FILES)
 	staticcheck ./...
