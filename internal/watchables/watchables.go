@@ -17,7 +17,7 @@ type Watchable struct {
 type Watchables map[string]Watchable
 
 func Read(path string) (*Watchables, error) {
-	yfile, err := os.ReadFile(path)
+	yfile, err := os.ReadFile(path) //#nosec G304
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func Write(path string, watchables *Watchables) error {
 		return err
 	}
 
-	err = os.WriteFile(path, out, 0o644)
+	err = os.WriteFile(path, out, 0o600)
 	if err != nil {
 		return err
 	}

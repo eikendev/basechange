@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/eikendev/basechange/internal/handling"
 )
 
 // ChallengeHeader is the HTTP Header containing challenge instructions
@@ -32,7 +34,7 @@ func GetToken(image string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer handling.Close(resp.Body)
 
 	challenge := strings.ToLower(resp.Header.Get(ChallengeHeader))
 

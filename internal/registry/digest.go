@@ -4,6 +4,8 @@ package registry
 
 import (
 	"net/http"
+
+	"github.com/eikendev/basechange/internal/handling"
 )
 
 // ContentDigestHeader is the key for the key-value pair containing the digest header
@@ -41,7 +43,7 @@ func getDigest(url string, token string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer handling.Close(resp.Body)
 
 	return resp.Header.Get(ContentDigestHeader), nil
 }

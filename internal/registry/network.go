@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eikendev/basechange/internal/handling"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -55,20 +56,19 @@ func RetryReq(method, url string, maxAttempts int, header http.Header, expectedC
 		}
 		req.Header = header
 
-		response, err := client.Do(req)
-		if err == nil && response.StatusCode == expectedCode {
-			return response, nil
+		resp, err := client.Do(req)
+		if err == nil && resp.StatusCode == expectedCode {
+			return resp, nil
 		}
+		defer handling.Close(resp.Body)
 
-		delay, retry := shouldRetry(maxAttempts, attempts, response)
+		delay, retry := shouldRetry(maxAttempts, attempts, resp)
 		if !retry {
 			if err == nil {
 				err = errors.New("too many attempts")
 			}
 			return nil, err
 		}
-
-		defer response.Body.Close()
 
 		if attempts < maxAttempts {
 			time.Sleep(delay)
@@ -83,7 +83,7 @@ func Req(method, uri string, header http.Header) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer handling.Close(resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
