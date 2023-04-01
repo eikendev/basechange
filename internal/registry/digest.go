@@ -11,6 +11,7 @@ import (
 // ContentDigestHeader is the key for the key-value pair containing the digest header
 const ContentDigestHeader = "Docker-Content-Digest"
 
+// GetImageDigest returns the latest digest of an image.
 func GetImageDigest(image string) (string, error) {
 	var digest string
 
@@ -39,7 +40,7 @@ func getDigest(url string, token string) (string, error) {
 	header.Add("Accept", "application/vnd.docker.distribution.manifest.v1+json")
 	header.Add("Accept", "application/vnd.oci.image.index.v1+json")
 
-	resp, err := RetryReq("HEAD", url, maxRetries+1, header, http.StatusOK)
+	resp, err := retryReq("HEAD", url, maxRetries+1, header, http.StatusOK)
 	if err != nil {
 		return "", err
 	}

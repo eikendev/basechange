@@ -1,3 +1,4 @@
+// Package watchables provides functionality for the watchables file.
 package watchables
 
 import (
@@ -7,6 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Watchable contains information of an image to be watched.
 type Watchable struct {
 	Image        string `yaml:"image"`
 	Repository   string `yaml:"repository"`
@@ -14,8 +16,10 @@ type Watchable struct {
 	CachedDigest string `yaml:"cached_digest"`
 }
 
+// Watchables is a collection of Watchable objects.
 type Watchables map[string]Watchable
 
+// Read returns the contents of the watchables file.
 func Read(path string) (*Watchables, error) {
 	yfile, err := os.ReadFile(path) //#nosec G304
 	if err != nil {
@@ -44,6 +48,7 @@ func Read(path string) (*Watchables, error) {
 	return &watchables, nil
 }
 
+// Write writes the provided watchables object to the watchables file.
 func Write(path string, watchables *Watchables) error {
 	out, err := yaml.Marshal(watchables)
 	if err != nil {

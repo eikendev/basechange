@@ -1,5 +1,6 @@
 // Extracted from https://containrrr.dev/watchtower/
 
+// Package registry provides functions to fetch the latest digest of an image.
 package registry
 
 import (
@@ -16,7 +17,7 @@ import (
 // ChallengeHeader is the HTTP Header containing challenge instructions
 const ChallengeHeader = "WWW-Authenticate"
 
-type TokenResponse struct {
+type tokenResponse struct {
 	Token string
 }
 
@@ -30,7 +31,7 @@ func GetToken(image string) (string, error) {
 	}
 
 	header := http.Header{"Accept": []string{"*/*"}}
-	resp, err := RetryReq("GET", challengeURL.String(), maxRetries+1, header, http.StatusUnauthorized)
+	resp, err := retryReq("GET", challengeURL.String(), maxRetries+1, header, http.StatusUnauthorized)
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +61,7 @@ func getBearerHeader(challenge string, image string) (string, error) {
 		return "", err
 	}
 
-	tokenResponse := &TokenResponse{}
+	tokenResponse := &tokenResponse{}
 
 	err = json.Unmarshal(resp, tokenResponse)
 	if err != nil {
@@ -103,7 +104,7 @@ func getAuthURL(challenge string, image string) (*url.URL, error) {
 }
 
 func getChallengeURL(image string) (url.URL, error) {
-	host, err := GetHost(image)
+	host, err := getHost(image)
 	if err != nil {
 		return url.URL{}, err
 	}

@@ -1,3 +1,4 @@
+// Package git provides functionality related to managing a Git repository.
 package git
 
 import (
@@ -13,6 +14,7 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
+// Commit creates an empty commit for a remote repository, triggering a rebuild of the image.
 func Commit(opts *options.Options, url, deployKey, digest string) error {
 	deployKeyBytes, err := base64.StdEncoding.DecodeString(deployKey)
 	if err != nil {

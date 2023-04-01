@@ -13,7 +13,7 @@ import (
 
 const (
 	maxRetries = 2
-	UserAgent  = "basechange"
+	userAgent  = "basechange"
 )
 
 var client http.Client
@@ -37,10 +37,10 @@ func shouldRetry(maxAttempts, attempts int, response *http.Response) (time.Durat
 }
 
 // https://codereview.stackexchange.com/q/173468
-func RetryReq(method, url string, maxAttempts int, header http.Header, expectedCode int) (*http.Response, error) {
+func retryReq(method, url string, maxAttempts int, header http.Header, expectedCode int) (*http.Response, error) {
 	log.Debugf("Requesting %s %s\n", method, url)
 
-	header.Set("User-Agent", UserAgent)
+	header.Set("User-Agent", userAgent)
 	attempts := 0
 
 	if maxAttempts < 1 {
@@ -79,7 +79,7 @@ func RetryReq(method, url string, maxAttempts int, header http.Header, expectedC
 
 // Req retrieves the Req HTTP response for a given URL.
 func Req(method, uri string, header http.Header) ([]byte, error) {
-	resp, err := RetryReq(method, uri, maxRetries+1, header, http.StatusOK)
+	resp, err := retryReq(method, uri, maxRetries+1, header, http.StatusOK)
 	if err != nil {
 		return nil, err
 	}

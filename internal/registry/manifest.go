@@ -10,7 +10,7 @@ import (
 	ref "github.com/docker/distribution/reference"
 )
 
-func GetHost(image string) (string, error) {
+func getHost(image string) (string, error) {
 	normalizedName, err := ref.ParseNormalizedNamed(image)
 	if err != nil {
 		return "", err
@@ -26,7 +26,7 @@ func GetHost(image string) (string, error) {
 
 // BuildManifestURL from raw image data
 func BuildManifestURL(image string) (string, error) {
-	host, err := GetHost(image)
+	host, err := getHost(image)
 	if err != nil {
 		return "", err
 	}
