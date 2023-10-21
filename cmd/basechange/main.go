@@ -11,7 +11,7 @@ import (
 	"github.com/eikendev/basechange/internal/registry"
 	"github.com/eikendev/basechange/internal/watchables"
 
-	ref "github.com/docker/distribution/reference"
+	ref "github.com/distribution/reference"
 	log "github.com/sirupsen/logrus"
 )
 

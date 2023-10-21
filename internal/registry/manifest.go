@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	ref "github.com/docker/distribution/reference"
+	ref "github.com/distribution/reference"
 )
 
 func getHost(image string) (string, error) {
