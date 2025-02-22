@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/eikendev/basechange/internal/options"
 	"github.com/go-git/go-billy/v5/memfs"
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/go-git/go-git/v5/storage/memory"
+
+	"github.com/eikendev/basechange/internal/options"
 )
 
 // Commit creates an empty commit for a remote repository, triggering a rebuild of the image.

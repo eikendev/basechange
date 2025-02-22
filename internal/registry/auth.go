@@ -35,9 +35,15 @@ func GetToken(image string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if resp == nil {
+		return "", errors.New("received nil response")
+	}
 	defer handling.Close(resp.Body)
 
 	challenge := strings.ToLower(resp.Header.Get(ChallengeHeader))
+	if challenge == "" {
+		return "", errors.New("empty challenge header")
+	}
 
 	if strings.HasPrefix(challenge, "bearer") {
 		return getBearerHeader(challenge, image)
@@ -47,9 +53,14 @@ func GetToken(image string) (string, error) {
 }
 
 func getBearerHeader(challenge string, image string) (string, error) {
-	if strings.Contains(image, ":") {
-		image = strings.Split(image, ":")[0]
+	if image == "" {
+		return "", errors.New("empty image name")
 	}
+	parts := strings.Split(image, ":")
+	if len(parts) == 0 {
+		return "", errors.New("invalid image name format")
+	}
+	image = parts[0]
 
 	authURL, err := getAuthURL(challenge, image)
 	if err != nil {
@@ -71,18 +82,38 @@ func getBearerHeader(challenge string, image string) (string, error) {
 	return fmt.Sprintf("Bearer %s", tokenResponse.Token), nil
 }
 
-func getAuthURL(challenge string, image string) (*url.URL, error) {
-	loweredChallenge := strings.ToLower(challenge)
-	raw := strings.TrimPrefix(loweredChallenge, "bearer")
+func parseChallengeKeyValue(pair string) (string, string, error) {
+	trimmed := strings.Trim(pair, " ")
+	if trimmed == "" {
+		return "", "", errors.New("empty pair")
+	}
 
+	kv := strings.Split(trimmed, "=")
+	if len(kv) != 2 {
+		return "", "", errors.New("invalid key-value format")
+	}
+
+	key := strings.TrimSpace(kv[0])
+	if key == "" {
+		return "", "", errors.New("empty key")
+	}
+
+	val := strings.Trim(strings.TrimSpace(kv[1]), "\"")
+	return key, val, nil
+}
+
+func extractChallengeValues(raw string) (map[string]string, error) {
 	pairs := strings.Split(raw, ",")
-	values := make(map[string]string, len(pairs))
+	if len(pairs) == 0 {
+		return nil, errors.New("invalid challenge format")
+	}
 
+	values := make(map[string]string, len(pairs))
 	for _, pair := range pairs {
-		trimmed := strings.Trim(pair, " ")
-		kv := strings.Split(trimmed, "=")
-		key := kv[0]
-		val := strings.Trim(kv[1], "\"")
+		key, val, err := parseChallengeKeyValue(pair)
+		if err != nil {
+			continue
+		}
 		values[key] = val
 	}
 
@@ -90,7 +121,18 @@ func getAuthURL(challenge string, image string) (*url.URL, error) {
 		return nil, fmt.Errorf("malformed challenge header")
 	}
 
-	authURL, _ := url.Parse(values["realm"])
+	return values, nil
+}
+
+func buildAuthURL(values map[string]string, image string) (*url.URL, error) {
+	authURL, err := url.Parse(values["realm"])
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse realm URL: %w", err)
+	}
+	if authURL == nil {
+		return nil, errors.New("nil URL after parsing")
+	}
+
 	q := authURL.Query()
 	q.Add("service", values["service"])
 
@@ -99,8 +141,22 @@ func getAuthURL(challenge string, image string) (*url.URL, error) {
 	q.Add("scope", scope)
 
 	authURL.RawQuery = q.Encode()
-
 	return authURL, nil
+}
+
+func getAuthURL(challenge string, image string) (*url.URL, error) {
+	loweredChallenge := strings.ToLower(challenge)
+	raw := strings.TrimPrefix(loweredChallenge, "bearer")
+	if raw == "" {
+		return nil, errors.New("empty bearer challenge")
+	}
+
+	values, err := extractChallengeValues(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	return buildAuthURL(values, image)
 }
 
 func getChallengeURL(image string) (url.URL, error) {

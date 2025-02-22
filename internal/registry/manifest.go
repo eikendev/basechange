@@ -48,22 +48,24 @@ func BuildManifestURL(image string) (string, error) {
 
 // extractImageAndTag from a concatenated string
 func extractImageAndTag(imageName string) (string, string) {
-	var img string
-	var tag string
+	if imageName == "" {
+		return "", "latest"
+	}
 
 	if strings.Contains(imageName, ":") {
 		parts := strings.Split(imageName, ":")
-		if len(parts) > 2 {
-			img = parts[0]
-			tag = strings.Join(parts[1:], ":")
-		} else {
-			img = parts[0]
-			tag = parts[1]
+		if len(parts) == 0 {
+			return "", "latest"
 		}
-	} else {
-		img = imageName
-		tag = "latest"
+		if len(parts) == 1 {
+			return parts[0], "latest"
+		}
+		if len(parts) == 2 {
+			return parts[0], parts[1]
+		}
+
+		return parts[0], strings.Join(parts[1:], ":")
 	}
 
-	return img, tag
+	return imageName, "latest"
 }

@@ -41,6 +41,9 @@ func NormalizeRegistry(registry string) (string, error) {
 // GetScopeFromImageName normalizes an image name for use as scope during auth and head requests
 func GetScopeFromImageName(image, svc string) string {
 	parts := strings.Split(image, "/")
+	if len(parts) == 0 {
+		return ""
+	}
 
 	if len(parts) > 2 {
 		if strings.Contains(svc, "docker.io") {

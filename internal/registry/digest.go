@@ -3,6 +3,8 @@
 package registry
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/eikendev/basechange/internal/handling"
@@ -42,9 +44,17 @@ func getDigest(url string, token string) (string, error) {
 
 	resp, err := retryReq("HEAD", url, maxRetries+1, header, http.StatusOK)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to get manifest: %w", err)
+	}
+	if resp == nil {
+		return "", errors.New("received nil response for manifest request")
 	}
 	defer handling.Close(resp.Body)
 
-	return resp.Header.Get(ContentDigestHeader), nil
+	digest := resp.Header.Get(ContentDigestHeader)
+	if digest == "" {
+		return "", errors.New("empty digest in response")
+	}
+
+	return digest, nil
 }
